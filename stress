@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 trap intr INT
 . /opt/intel/bin/compilervars.sh intel64
 PYTHONPATH=/usr/src/micperf/micp:${PYTHONPATH}
