@@ -10,8 +10,8 @@ intr() {
 i=0
 j=0
 while true; do
-	clear
 	micsmc -c > overmon.tmp
+	clear
 	echo "Overall load: $(cat overmon.tmp | sed -n 3p | awk '{ printf $4 $6 }' | sed s/%,/\ /g | awk '{ printf $1 + $2 + "\n"}')%"
 	printf "Per-core load: "
 	k=0
