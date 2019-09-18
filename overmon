@@ -1,0 +1,30 @@
+#!/bin/bash
+trap intr INT
+set -eu
+
+intr() {
+	rm overmon.tmp
+	exit
+}
+
+i=0
+j=0
+while true; do
+	clear
+	micsmc -c > overmon.tmp
+	echo "Overall load: $(cat overmon.tmp | sed -n 3p | awk '{ printf $4 $6 }' | sed s/%,/\ /g | awk '{ printf $1 + $2 + "\n"}')%"
+	printf "Per-core load: "
+	k=0
+	l=$(cat overmon.tmp | sed -n 4p | awk '{ printf $4 }' | sed s/\(//)
+	while [ $k -lt $l ]; do
+		load=$(cat overmon.tmp | sed -n $((k+5))p | awk '{ printf $4 $6}' | sed s/%,/\ /g | awk '{ printf $1 + $2 }')
+		printf "$((k+1)): $load%% "
+		k=$((k+1))
+	done
+	printf "\n"
+	echo "CPU Temp: $(micsmc -t | sed -n 3p | awk '{ printf $4 }') C"
+	echo "Info: overmon has been running for $i second(s) or $j minute(s)."
+	sleep 5
+	i=$((i+5))
+	j=$(echo "scale=2; ${i}/60" | bc)
+done
