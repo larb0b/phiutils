@@ -1,0 +1,13 @@
+#!/bin/sh
+set -eu
+
+i=0
+j=0
+while true; do
+	clear
+	micsmc -c
+	echo "Info: cpumon has been running for $i second(s) or $j minute(s)."
+	sleep 5
+	i=$((i+5))
+	j=$(echo "scale=2; ${i}/60" | bc)
+done

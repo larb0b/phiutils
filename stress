@@ -1,0 +1,25 @@
+#!/bin/sh
+trap intr INT
+. /opt/intel/bin/compilervars.sh intel64
+PYTHONPATH=/usr/src/micperf/micp:${PYTHONPATH}
+PATH=/usr/src/micperf/micp/micp/scripts:${PATH}
+clear
+micprun -k dgemm -d 0 -p "--i_num_rep 3000" &
+
+intr() {
+	echo "Info: Killing stress test and exiting.\n"
+	ssh -n mic0 pkill gemm_mic.x
+	exit
+}
+
+i=0
+j=0
+while true; do
+	until ssh mic0 ps -ea | grep gemm_mic.x > /dev/null; do
+		printf "\rWaiting for gemm_mic.x process to spawn..."
+	done
+	printf "\rInfo: Stress test has been running for $i second(s) or $j minute(s)."
+	sleep 5
+	i=$((i+5))
+	j=$(echo "scale=2; ${i}/60" | bc)
+done
